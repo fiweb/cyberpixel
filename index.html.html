@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyberpunk Pixel Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Genos:ital,wght@0,100..900;1,100..900&family=Oxanium:wght@200..800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --grid: #111827;
+      --neon1: #00f0ff;
+      --neon2: #ff00c8;
+      --neon3: #00ff9f;
+      --text: #c7d2ff;
+      --dim: #6b7280;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* PREVENTS SCROLL JITTER */
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+      position: relative;
+      scroll-behavior: smooth;
+    }
+
+    /* BOOT SCREEN SCROLL LOCK */
+    .lock-scroll {
+      overflow: hidden !important;
+      height: 100vh;
+    }
+
+    body {
+      font-family: 'VT323', monospace;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.08) 4px),
+        radial-gradient(circle at center, rgba(0,255,255,0.05) 0%, rgba(255,0,200,0.05) 40%, rgba(0,0,0,0.6) 100%);
+      mix-blend-mode: screen;
+      z-index: 9998;
+      animation: crtFlicker 0.12s infinite;
+    }
+
+    @keyframes crtFlicker { 0% { opacity: 0.9; } 50% { opacity: 1; } 100% { opacity: 0.92; } }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    #boot {
+      position: fixed;
+      inset: 0;
+      background: black;
+      color: var(--neon1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Press Start 2P', monospace;
+      z-index: 9999;
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+    }
+
+    #boot p { font-size: 12px; font-family: 'Press Start 2P'; margin: 6px 0; opacity: 0; }
+    #boot .prompt { opacity: 1; animation: blink 1s infinite; }
+    #boot.start p { animation: bootFade 0.6s forwards; }
+    #boot.start p:nth-child(1) { animation-delay: 0.2s; }
+    #boot.start p:nth-child(2) { animation-delay: 0.8s; }
+    #boot.start p:nth-child(3) { animation-delay: 1.4s; }
+    #boot.start p:nth-child(4) { animation-delay: 2.0s; }
+    #boot.start p:nth-child(5) { animation-delay: 2.6s; }
+
+    @keyframes bootFade { to { opacity: 1; } }
+    @keyframes blink { 50% { opacity: 0.3; } }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--neon1);
+      z-index: 1000;
+    }
+
+    header div { font-family: 'Press Start 2P', monospace; font-size: 12px; color: var(--neon1); text-shadow: 0 0 8px var(--neon1); }
+
+    nav a { margin-left: 20px; text-decoration: none; color: var(--text); transition: 0.2s; position: relative; }
+    nav a.active { color: var(--neon1); text-shadow: 0 0 8px var(--neon1); }
+    nav a::after { content: ""; position: absolute; left: 0; bottom: -4px; width: 0%; height: 2px; background: var(--neon2); transition: 0.3s; }
+    nav a:hover::after, nav a.active::after { width: 100%; }
+    nav a:hover { color: var(--neon2); text-shadow: 0 0 6px var(--neon2); }
+
+    section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 120px 20px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      will-change: opacity, transform;
+      max-width: 100vw;
+    }
+
+    section.active { opacity: 1; transform: translateY(0); }
+    section::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, rgba(0,255,255,0.08) 0px, transparent 2px, transparent 6px);
+      mix-blend-mode: screen;
+      opacity: 0;
+      pointer-events: none;
+    }
+    section.wipe::after { animation: wipeFlash 0.6s ease; }
+
+    @keyframes wipeFlash {
+      0% { opacity: 0; transform: translateX(-100%); }
+      50% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(100%); }
+    }
+
+    h1, h2 { font-family: 'Press Start 2P', monospace; margin-bottom: 20px; }
+    h1 { font-size: 32px; color: var(--neon1); text-shadow: 0 0 12px var(--neon1); }
+    h2 { font-size: 18px; color: var(--neon2); text-shadow: 0 0 10px var(--neon2); }
+
+    p { font-size: 22px; color: var(--dim); max-width: 70ch; line-height: 1.6; font-family: "Oxanium"; }
+
+    .hero-content { max-width: 70ch; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+
+    .bracket { color: var(--neon2); margin: 0 4px; font-family: 'Press Start 2P', monospace; font-size: 14px; }
+
+    .log-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; width: 100%; max-width: 1000px; margin-top: 40px; }
+
+    .log-card { background: rgba(0,0,0,0.6); border: 1px solid var(--neon1); padding: 16px; position: relative; transition: 0.2s; text-align: center; }
+    .log-card:hover { transform: translateY(-4px); box-shadow: 0 0 18px var(--neon1); }
+
+    .log-status { font-size: 12px; font-family: 'Press Start 2P', monospace; margin-bottom: 8px; }
+    .log-status.ok { color: var(--neon3); }
+    .log-status.warn { color: var(--neon2); }
+    .log-status.sys { color: var(--neon1); }
+    .log-title { font-size: 18px; color: var(--text); margin-bottom: 6px; }
+    .log-desc { font-size: 20px; color: var(--dim); }
+
+    /* DESKTOP SEPARATOR: Horizontal Stretch applied */
+    .separator {
+      width: 100%;
+      height: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .separator::before {
+      content: "";
+      position: absolute;
+      top: -10px; 
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      /* Using 'ellipse' to stretch the glow horizontally */
+      background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(255,0,200,0.3), transparent 75%);
+      filter: blur(12px); 
+      pointer-events: none;
+    }
+    .separator::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      top: 50%;
+      background: var(--neon1);
+      box-shadow: 0 0 10px var(--neon1);
+    }
+
+    .glitch { animation: glitch 1s infinite; }
+    .glitch-reverse { animation: glitch-reverse 1s infinite; }
+
+    @keyframes glitch {
+      0%, 100% { text-shadow: 2px 0 var(--neon2), -2px 0 var(--neon3); }
+      50% { text-shadow: -2px 0 var(--neon2), 2px 0 var(--neon3); }
+    }
+    @keyframes glitch-reverse {
+      0%, 100% { text-shadow: 2px 0 var(--neon3), -2px 0 var(--neon2); }
+      50% { text-shadow: -2px 0 var(--neon3), 2px 0 var(--neon2); }
+    }
+
+    #email { cursor: pointer; transition: 0.3s; position: relative; display: inline-block; }
+    #email:hover { color: var(--neon1); text-shadow: 0 0 15px var(--neon1); transform: scale(1.05); }
+
+    .transmission { font-size: 14px; color: var(--dim); margin-top: 6px; }
+
+    footer { padding: 40px 20px; text-align: center; background: black; color: var(--dim); }
+
+    @media (max-width: 768px) {
+      section { padding: 100px 16px; }
+      h1 { font-size: 20px; }
+      h2 { font-size: 16px; }
+      p { font-size: 16px; }
+      header { flex-direction: column; gap: 12px; align-items: center; padding: 15px; }
+      .bracket { font-size: 10px; margin: 0 2px; }
+      nav a { margin: 0 10px; font-size: 14px; }
+
+      /* MOBILE SEPARATOR: Kept tight but still using ellipse */
+      .separator::before {
+        top: -5px;
+        bottom: -5px;
+        filter: blur(6px);
+        background: radial-gradient(ellipse 90% 50% at 50% 50%, rgba(255,0,200,0.3), transparent 60%);
+      }
+      .separator::after {
+        box-shadow: 0 0 5px var(--neon1);
+      }
+    }
+  </style>
+</head>
+<body class="lock-scroll">
+
+<div id="boot">
+  <p class="prompt">PRESS ANY KEY TO BOOT</p>
+  <p>INITIALIZING SYSTEM...</p>
+  <p>LOADING NEURAL INTERFACE...</p>
+  <p>SYNCING CYBER MODULES...</p>
+  <p>ACCESS GRANTED</p>
+</div>
+
+<header>
+  <div>CYBER//PIXEL</div>
+  <nav>
+    <a href="#hero" data-section="hero">Home</a>
+    <a href="#logs" data-section="logs">Logs</a>
+    <a href="#contact" data-section="contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section id="hero">
+    <div class="hero-content">
+      <h1 class="glitch">SYSTEM ONLINE</h1>
+      <p><strong>// PROFILE LOADED: PROBLEM SOLVER MODULE</strong></p>
+      
+      <div>
+        <p><strong><span class="bracket">&lt;</span>SUMMARY<span class="bracket">&gt;</span></strong></p>
+        <p>Web developer, designer, and digital experimenter focused on building and breaking systems to understand them.</p>
+      </div>
+
+      <div>
+        <p><strong><span class="bracket">&lt;</span>EXPERIENCE<span class="bracket">&gt;</span></strong></p>
+        <p>20+ years across web development, e-commerce systems, advertising campaigns, and client-facing production work with hundreds of users.</p>
+      </div>
+
+      <div>
+        <p><strong><span class="bracket">&lt;</span>STACK<span class="bracket">&gt;</span></strong></p>
+        <p>HTML, CSS, JavaScript (Node.js, Express, React, jQuery, EJS), Python, C#, Unity, plus graphic and video production toolchains.</p>
+      </div>
+
+      <div>
+        <p><strong><span class="bracket">&lt;</span>MISSION<span class="bracket">&gt;</span></strong></p>
+        <p>Solve problems through iteration and experimentation, improve system usability, and prioritize user satisfaction as the final output metric.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="separator"></div>
+
+  <section id="logs">
+    <h2 class="glitch">SYSTEM OUTPUT LOGS</h2>
+    <div class="log-grid">
+      <div class="log-card">
+        <div class="log-status sys">SYS://ACTIVE</div>
+        <div class="log-title">UI/UX ARCHITECTURE</div>
+        <div class="log-desc">Modular UI systems built for responsive interaction and structured visual hierarchy. Focus on usability, clarity, and consistent user flow.</div>
+      </div>
+      <div class="log-card">
+        <div class="log-status ok">OK://DEPLOYED</div>
+        <div class="log-title">WEB SYSTEMS</div>
+        <div class="log-desc">Full-stack web applications using modern tech, JS frameworks and backend APIs. Designed for performance, scalability, and integration.</div>
+      </div>
+      <div class="log-card">
+        <div class="log-status warn">EXP://RUNNING</div>
+        <div class="log-title">EXPERIMENTAL BUILDS</div>
+        <div class="log-desc">Interactive prototypes, coding experiments, and visual system stress tests. Used to explore motion and layout behavior across different systems.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="separator"></div>
+
+  <section id="contact">
+    <h2 class="glitch-reverse">CONTACT</h2>
+    <p id="email">devnemui@gmail.com</p>
+    <p id="copy-feedback" class="transmission" style="opacity:0;">// transmission copied</p>
+    <p class="transmission">// encrypted transmission channel</p>
+  </section>
+</main>
+
+<footer>
+  © 2026 CYBER//PIXEL
+</footer>
+
+<script>
+  const boot = document.getElementById('boot');
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('nav a');
+  const email = document.getElementById('email');
+  const feedback = document.getElementById('copy-feedback');
+
+  const observerOptions = { threshold: 0.5 };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        entry.target.classList.add('wipe');
+        setTimeout(() => entry.target.classList.remove('wipe'), 650);
+
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('data-section') === entry.target.id);
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(s => observer.observe(s));
+
+  function startBoot() {
+  if (!boot || boot.classList.contains('start')) return;
+
+  boot.classList.add('start');
+
+  setTimeout(() => {
+    boot.style.opacity = '0';
+    boot.style.transition = '1s ease';
+    
+    // REMOVE THE LOCK HERE
+    document.body.classList.remove('lock-scroll');
+    
+    setTimeout(() => boot.remove(), 1000);
+  }, 3500);
+}
+
+  window.addEventListener('keydown', startBoot, { once: true });
+  window.addEventListener('click', startBoot, { once: true });
+
+  if (email) {
+    email.addEventListener('click', () => {
+      const text = email.innerText.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        if (feedback) {
+          feedback.style.opacity = '1';
+          setTimeout(() => feedback.style.opacity = '0', 1200);
+        }
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
