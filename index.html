@@ -278,7 +278,19 @@
     footer { padding: 40px 20px; text-align: center; background: black; color: var(--dim); }
 
     @media (max-width: 768px) {
-      section { padding: 100px 16px; }
+      /* adding 'min-height: auto' to it */
+      section { 
+        padding: 60px 16px; 
+        min-height: auto; 
+      }
+
+      /* REDUCING SECTION HEIGHT ON MOBILE */
+      #contact {
+        padding-top: 40px; 
+        min-height: 60vh;
+        justify-content: flex-start;
+      }
+
       h1 { font-size: 20px; }
       h2 { font-size: 16px; }
       p { font-size: 16px; }
