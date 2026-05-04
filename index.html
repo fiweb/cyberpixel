@@ -221,6 +221,58 @@
     #email { cursor: pointer; transition: 0.3s; position: relative; display: inline-block; }
     #email:hover { color: var(--neon1); text-shadow: 0 0 15px var(--neon1); transform: scale(1.05); }
 
+    /* Container and the main circular frame */
+.radar-container {
+  margin: 40px 0;
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+.radar-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid var(--neon3);
+  position: relative;
+  overflow: hidden;
+  /* Creates the radial rings and square grid background */
+  background: 
+    repeating-radial-gradient(transparent, transparent 19px, rgba(0, 255, 159, 0.1) 20px),
+    linear-gradient(rgba(0, 255, 159, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 159, 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px, 20px 20px;
+}
+
+/* The rotating sweep line with a trailing gradient */
+.radar-sweep {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(from 90deg, rgba(0, 255, 159, 0.5), transparent 90deg);
+  transform-origin: 0% 0%;
+  animation: radarSpin 4s linear infinite;
+}
+
+/* Individual target blips */
+.radar-blip {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--neon2);
+  border-radius: 50%;
+  filter: blur(1px);
+  box-shadow: 0 0 10px var(--neon2);
+  animation: blipFade 4s infinite;
+  opacity: 0;
+}
+
+/* Blip positioning and timing to sync with the sweep */
+.blip-1 { top: 30%; left: 70%; animation-delay: 0.5s; }
+.blip-2 { top: 60%; left: 25%; animation-delay: 2.2s; }
+
     .transmission { font-size: 14px; color: var(--dim); margin-top: 6px; }
 
     footer { padding: 40px 20px; text-align: center; background: black; color: var(--dim); }
@@ -244,6 +296,19 @@
         box-shadow: 0 0 5px var(--neon1);
       }
     }
+
+    /* Continuous rotation for the sweep */
+@keyframes radarSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Pulse effect for the blips */
+@keyframes blipFade {
+  0%, 15% { opacity: 0; transform: scale(0.5); }
+  20% { opacity: 1; transform: scale(1.2); }
+  40%, 100% { opacity: 0; transform: scale(1); }
+}
   </style>
 </head>
 <body class="lock-scroll">
@@ -319,11 +384,21 @@
   <div class="separator"></div>
 
   <section id="contact">
-    <h2 class="glitch-reverse">CONTACT</h2>
-    <p id="email">devnemui@gmail.com</p>
-    <p id="copy-feedback" class="transmission" style="opacity:0;">// transmission copied</p>
-    <p class="transmission">// encrypted transmission channel</p>
-  </section>
+  <!-- Radar Component -->
+  <div class="radar-container">
+    <div class="radar-circle">
+      <div class="radar-sweep"></div>
+      <div class="radar-blip blip-1"></div>
+      <div class="radar-blip blip-2"></div>
+    </div> <!-- Closes radar-circle -->
+  </div> <!-- Closes radar-container -->
+
+  <!-- Content -->
+  <h2 class="glitch-reverse">COMMUNICATIONS</h2>
+  <p id="email">devnemui@gmail.com</p>
+  <p id="copy-feedback" class="transmission" style="opacity:0;">// transmission copied</p>
+  <p class="transmission">// encrypted transmission channel</p>
+</section>
 </main>
 
 <footer>
